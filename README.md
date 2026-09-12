@@ -1,45 +1,42 @@
-# API de Videojuegos
+# API REST de Gestión de Juegos (`api_juegos`)
 
-Este proyecto consiste en una API web desarrollada con Java y Spring Boot, cuyo objetivo es realizar operaciones básicas relacionadas con videojuegos. La API permite consultar información, buscar videojuegos, consultar un videojuego mediante un identificador y recibir información mediante solicitudes POST en formato JSON. El proyecto utiliza Java, Spring Boot, Maven, Spring Web, Postman y GitHub. Además, se implementa un `record` como DTO llamado `VideojuegoDTO` para representar los datos recibidos en las solicitudes y se utiliza `ResponseEntity` para retornar códigos HTTP coherentes con las operaciones realizadas.
+API RESTful desarrollada para la gestión de un catálogo de videojuegos, utilizando persistencia en una base de datos en memoria.
 
-## Endpoints
+---
 
-### 1. Obtener videojuegos
+## ⚙️ Funcionamiento y Arquitectura
 
-**Método:** GET
+El proyecto sigue el patrón de diseño por capas estándar de Spring Boot:
 
-**Ruta:** `/videojuegos`
+* **Capa de Presentación (`JuegoController`):** Expone los endpoints REST (`GET`, `POST`, `PUT`, `DELETE`), procesa las peticiones HTTP y maneja las respuestas con códigos de estado semánticos (`200 OK`, `201 Created`, `204 No Content`, `404 Not Found`).
+* **Capa de Datos (`JuegoRepository`):** Interfaz que extiende de `JpaRepository`, permitiendo operaciones CRUD automáticas sobre la base de datos sin escribir SQL manual. Incluye un método derivado (`findByGeneroIgnoreCase`) para consultas personalizadas con `@RequestParam`.
+* **Capa de Modelo (`Juego`):** Clase mapeada con JPA (`@Entity`) que define la estructura de la tabla en la base de datos (`id`, `titulo`, `genero`, `precio`, `plataforma`).
 
-Este endpoint permite realizar una consulta general de videojuegos. Al realizar una solicitud GET a `http://localhost:8080/videojuegos`, la API responde con un mensaje indicando que se está obteniendo la lista de videojuegos.
+---
 
-### 2. Obtener videojuego por ID
+## 🛠️ Tecnologías Implementadas
 
-**Método:** GET
+* **Java 21:** Lenguaje de programación base.
+* **Spring Boot 3.x:** Framework para la creación de la API REST (módulo Spring Web).
+* **Spring Data JPA & Hibernate:** ORM para el mapeo objeto-relacional y persistencia de datos.
+* **H2 Database:** Base de datos relacional en memoria para desarrollo y pruebas rápidas.
+* **Maven:** Gestión de dependencias y construcción del proyecto.
 
-**Ruta:** `/videojuegos/{id}`
+---
 
-Este endpoint utiliza `@PathVariable` para recibir el identificador del videojuego directamente desde la URL. Por ejemplo, al realizar una solicitud GET a `http://localhost:8080/videojuegos/5`, la API recibe el valor `5` como identificador y responde indicando que se encontró un videojuego con ese ID.
+## 🚀 Ejecución Rápida
 
-### 3. Buscar videojuego por nombre
+1. Ejecuta la clase principal `ApiJuegosApplication.java` en tu IDE (IntelliJ IDEA).
+2. La API se levantará en `http://localhost:8080`.
+3. Accede a la consola de la base de datos en `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:juegosdb`, Usuario: `sa`, sin contraseña).
 
-**Método:** GET
+---
 
-**Ruta:** `/buscar?nombre=FIFA`
+## 📌 Resumen de Endpoints
 
-Este endpoint utiliza `@RequestParam` para recibir el nombre del videojuego como parámetro de consulta. Por ejemplo, al realizar una solicitud GET a `http://localhost:8080/buscar?nombre=FIFA`, la API recibe el valor `FIFA` y responde indicando que se está buscando ese videojuego.
-
-### 4. Crear videojuego
-
-**Método:** POST
-
-**Ruta:** `/videojuegos`
-
-Este endpoint permite recibir información de un videojuego mediante una solicitud POST utilizando `@RequestBody`. Los datos son enviados en formato JSON y representados mediante el `record` `VideojuegoDTO`. Un ejemplo de la información enviada es:
-
-```json
-{
-    "nombre": "FIFA 26",
-    "genero": "Deportes",
-    "precio": 250000
-}
-
+* **POST** `/juegos` : Crea un nuevo juego (requiere JSON).
+* **GET** `/juegos` : Lista todos los juegos.
+* **GET** `/juegos/{id}` : Busca un juego específico.
+* **GET** `/juegos/buscar?genero={genero}` : Filtra juegos por género.
+* **PUT** `/juegos/{id}` : Actualiza los datos de un juego (requiere JSON).
+* **DELETE** `/juegos/{id}` : Elimina un juego.
